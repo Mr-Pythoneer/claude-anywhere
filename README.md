@@ -10,10 +10,25 @@ A standalone Claude AI device built on an M5Stack AtomS3U. Plug it into any comp
 
 - **Plug-and-play** — connects to WiFi, opens a browser tab automatically on Mac/Windows/Linux
 - **Web chat UI** — clean dark-theme interface at `http://claudebuddy.local`
+- **Code execution** — companion app lets Claude actually run Python, Bash, and Node.js code on your computer
 - **Serial terminal fallback** — works on any device with a UART (Raspberry Pi, other microcontrollers, etc.)
 - **Claude Sonnet** — uses `claude-sonnet-4-6` for real coding help, not just quick answers
 - **Rainbow LED** — spins through all colors while Claude is thinking, so you know it's working
 - **No hardcoded WiFi** — captive portal on first boot lets you enter credentials from any phone or laptop
+
+---
+
+## ⚠️ Python 3 required for code execution
+
+The companion app (which enables the **▶ Run** button for code blocks) is a Python 3 script. Python 3 must be installed on the host computer for this to work.
+
+| OS | Status |
+|----|--------|
+| **macOS** | Python 3 is pre-installed (or install via `brew install python3`) |
+| **Linux** | Usually pre-installed. If not: `sudo apt install python3` |
+| **Windows** | **NOT pre-installed.** Download from [python.org/downloads](https://www.python.org/downloads/) and check "Add Python to PATH" during install |
+
+Without Python 3, the device still works — you just won't get the Run button. The web UI and serial terminal work on any computer regardless.
 
 ---
 
