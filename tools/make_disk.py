@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Claude Buddy USB drive FAT12 disk image with LFN support.
+"""Generate Claude Anywhere USB drive FAT12 disk image with LFN support.
 Run:  python3 tools/make_disk.py > disk_image.h
 """
 import struct, sys
@@ -24,7 +24,7 @@ next_cluster = 2   # clusters 0 and 1 are reserved
 def make_boot():
     b = bytearray(SECTOR)
     b[0:3]  = bytes([0xEB, 0x3C, 0x90])
-    b[3:11] = b'CLAUDEBD'
+    b[3:11] = b'CLAUDEAW'
     struct.pack_into('<H', b, 11, SECTOR)
     b[13]   = 1
     struct.pack_into('<H', b, 14, RESERVED)
@@ -38,7 +38,7 @@ def make_boot():
     b[36]   = 0x80
     b[38]   = 0x29
     struct.pack_into('<I', b, 39, 0xCB0D1234)
-    b[43:54] = b'CLAUDEBUDDY'             # volume label: exactly 11 bytes
+    b[43:54] = b'CLAUDE ANY '             # volume label: exactly 11 bytes
     b[54:62] = b'FAT12   '
     b[510:512] = bytes([0x55, 0xAA])
     return b
@@ -161,7 +161,7 @@ QUICK START:
   Windows: Double-click "Launch Windows.bat"
   Linux:   Run "Launch Linux.sh" in Terminal
   Any OS:  Open "Start Here.htm" in a browser
-           then go to http://claudebuddy.local
+           then go to http://claudeanywhere.local
 
 REQUIREMENTS:
   - Python 3 (for companion + code execution)
@@ -177,7 +177,7 @@ WiFi SETUP:
 RASPBERRY PI / HEADLESS LINUX:
   Serial terminal: screen /dev/ttyUSB0 115200
                    screen /dev/ttyACM0 115200
-  Or open http://claudebuddy.local in any browser.
+  Or open http://claudeanywhere.local in any browser.
 
 LED GUIDE:
   Orange  = connecting to WiFi / hotspot active
@@ -190,7 +190,7 @@ BUTTON:
   Tap     = clear conversation
   Hold 3s = reset WiFi settings
 
-https://github.com/Mr-Pythoneer/claude-buddy
+https://github.com/Mr-Pythoneer/claude-anywhere
 """
 
 START_HTM = b"""\
@@ -199,7 +199,7 @@ START_HTM = b"""\
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Claude Buddy - Start Here</title>
+<title>Claude Anywhere - Start Here</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3;max-width:620px;margin:40px auto;padding:20px}
@@ -214,9 +214,9 @@ hr{border:none;border-top:1px solid #30363d;margin:20px 0}
 </style>
 </head>
 <body>
-<h1>Claude Buddy</h1>
+<h1>Claude Anywhere</h1>
 <p>Your portable AI device is ready.</p>
-<a class="btn" href="http://claudebuddy.local">Open Chat &rarr; claudebuddy.local</a>
+<a class="btn" href="http://claudeanywhere.local">Open Chat &rarr; claudeanywhere.local</a>
 <hr>
 <h2>Companion (enables code execution)</h2>
 <ul>
@@ -225,7 +225,7 @@ hr{border:none;border-top:1px solid #30363d;margin:20px 0}
 </ul>
 <p>Requires <a href="https://python.org/downloads" style="color:#58a6ff">Python 3</a>.</p>
 <hr>
-<p style="font-size:.8rem;color:#484f58">LED: orange=connecting &bull; blue=ready &bull; rainbow=thinking &bull; green=done &nbsp;&bull;&nbsp; <a href="https://github.com/Mr-Pythoneer/claude-buddy" style="color:#484f58">GitHub</a></p>
+<p style="font-size:.8rem;color:#484f58">LED: orange=connecting &bull; blue=ready &bull; rainbow=thinking &bull; green=done &nbsp;&bull;&nbsp; <a href="https://github.com/Mr-Pythoneer/claude-anywhere" style="color:#484f58">GitHub</a></p>
 </body>
 </html>
 """
@@ -233,7 +233,7 @@ hr{border:none;border-top:1px solid #30363d;margin:20px 0}
 MAC_SH = b"""\
 #!/bin/bash
 clear
-echo "=== Claude Buddy ==="
+echo "=== Claude Anywhere ==="
 echo ""
 if ! command -v python3 &>/dev/null; then
   echo "ERROR: Python 3 not found."
@@ -247,13 +247,13 @@ if ! command -v python3 &>/dev/null; then
 fi
 echo "Starting companion..."
 echo ""
-curl -s http://claudebuddy.local/run | python3
+curl -s http://claudeanywhere.local/run | python3
 if [ ${PIPESTATUS[0]} -ne 0 ]; then
   echo ""
   echo "Could not reach device. Check:"
   echo "  1. Device LED is blue (not orange)"
   echo "  2. Your Mac is on the same WiFi as the device"
-  echo "  3. Try opening http://claudebuddy.local in a browser"
+  echo "  3. Try opening http://claudeanywhere.local in a browser"
   echo ""
   read -rp "Press Enter to close..."
 fi
@@ -261,7 +261,7 @@ fi
 
 WIN_BAT = b"""\
 @echo off
-echo === Claude Buddy ===
+echo === Claude Anywhere ===
 echo.
 where python >nul 2>nul
 if errorlevel 1 (
@@ -275,13 +275,13 @@ if errorlevel 1 (
 )
 echo Starting companion...
 echo.
-curl -s http://claudebuddy.local/run | python
+curl -s http://claudeanywhere.local/run | python
 if errorlevel 1 (
   echo.
   echo Could not reach device. Check:
   echo   1. Device LED is blue (not orange)
   echo   2. This PC is on the same WiFi as the device
-  echo   3. Try: http://claudebuddy.local in a browser
+  echo   3. Try: http://claudeanywhere.local in a browser
   echo.
   pause
 )
@@ -290,7 +290,7 @@ if errorlevel 1 (
 LINUX_SH = b"""\
 #!/bin/bash
 clear
-echo "=== Claude Buddy ==="
+echo "=== Claude Anywhere ==="
 echo ""
 if ! command -v python3 &>/dev/null; then
   echo "ERROR: Python 3 not found."
@@ -301,13 +301,13 @@ if ! command -v python3 &>/dev/null; then
 fi
 echo "Starting companion..."
 echo ""
-curl -s http://claudebuddy.local/run | python3
+curl -s http://claudeanywhere.local/run | python3
 if [ ${PIPESTATUS[0]} -ne 0 ]; then
   echo ""
   echo "Could not reach device. Check:"
   echo "  1. Device LED is blue (not orange)"
   echo "  2. On the same WiFi as the device"
-  echo "  3. Try: http://claudebuddy.local in browser"
+  echo "  3. Try: http://claudeanywhere.local in browser"
   echo "  Raspberry Pi: screen /dev/ttyUSB0 115200"
   echo ""
   read -rp "Press Enter to close..."
@@ -317,7 +317,7 @@ fi
 # ── Build the image ────────────────────────────────────────────────────
 # Volume label entry (no LFN, attribute 0x08)
 vol = bytearray(32)
-vol[0:11] = b'CLAUDEBUDDY'             # 11 bytes exactly
+vol[0:11] = b'CLAUDE ANY '             # 11 bytes exactly
 vol[11]   = 0x08
 root[0:32] = vol
 root_pos   = 1

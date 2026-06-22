@@ -1,4 +1,4 @@
-# Claude Buddy
+# Claude Anywhere
 
 A standalone Claude AI device built on an M5Stack AtomS3U. Plug it into any computer with internet — it shows up as both a USB chat device (web UI) and a USB flash drive with easy-launch scripts. No software to install on the host machine.
 
@@ -9,9 +9,9 @@ A standalone Claude AI device built on an M5Stack AtomS3U. Plug it into any comp
 ## What it does
 
 - **USB drive** — appears as a flash drive with `Start Here.htm`, `Launch Mac.sh`, `Launch Windows.bat`, and `Launch Linux.sh`
-- **Web chat UI** — full chat interface at `http://claudebuddy.local` (works on any browser including Raspberry Pi)
+- **Web chat UI** — full chat interface at `http://claudeanywhere.local` (works on any browser including Raspberry Pi)
 - **Code execution** — companion app lets Claude actually run Python, Bash, and Node.js on your computer (▶ Run button)
-- **Chat history** — conversation saved to `~/.claudebuddy/history.json` on the host; plug back into the same computer and your history is restored. New computer = fresh start automatically.
+- **Chat history** — conversation saved to `~/.claudeanywhere/history.json` on the host; plug back into the same computer and your history is restored. New computer = fresh start automatically.
 - **Serial terminal** — works on any device with a UART (Raspberry Pi, other microcontrollers, headless Linux)
 - **Claude Sonnet** — uses `claude-sonnet-4-6` for real coding help
 - **Rainbow LED** — cycles through all colors while Claude is thinking
@@ -23,17 +23,17 @@ A standalone Claude AI device built on an M5Stack AtomS3U. Plug it into any comp
 
 ### Option A — USB drive (recommended)
 
-1. A **Claude Buddy** USB drive appears on your computer
+1. A **Claude Anywhere** USB drive appears on your computer
 2. Open the launcher for your OS:
    - **Mac:** Right-click `Launch Mac.sh` → Open With → Terminal (or open Terminal and drag the file in)
    - **Windows:** Double-click `Launch Windows.bat`
    - **Linux:** Open terminal, `bash /path/to/"Launch Linux.sh"`
    - **Any OS:** Double-click `Start Here.htm` for a browser with instructions
-3. A browser opens to `http://claudebuddy.local` — start chatting!
+3. A browser opens to `http://claudeanywhere.local` — start chatting!
 
 ### Option B — Open browser directly
 
-Just open `http://claudebuddy.local` or `http://[device IP]` in any browser on the same WiFi.
+Just open `http://claudeanywhere.local` or `http://[device IP]` in any browser on the same WiFi.
 
 ### Option C — Raspberry Pi / headless Linux
 
@@ -44,7 +44,7 @@ screen /dev/ttyUSB0 115200
 screen /dev/ttyACM0 115200
 
 # Or open browser (Chromium is pre-installed on Pi OS)
-chromium-browser http://claudebuddy.local
+chromium-browser http://claudeanywhere.local
 ```
 
 ---
@@ -66,7 +66,7 @@ Without Python 3, the device still works — you just won't get the Run button o
 ## Chat History
 
 When the companion is running:
-- Your conversation is saved to `~/.claudebuddy/history.json` on the host computer after each reply
+- Your conversation is saved to `~/.claudeanywhere/history.json` on the host computer after each reply
 - Plug the device into the **same computer** again → companion loads your previous conversation automatically
 - Plug into a **new computer** → fresh start (no history file there)
 - Press the button on the device → clears current conversation and the history file
@@ -113,7 +113,7 @@ arduino-cli lib install "FastLED"
 
 ### 4. Add your API key
 
-Open `ClaudeBuddy.ino` and replace:
+Open `ClaudeAnywhere.ino` and replace:
 ```cpp
 const char* CLAUDE_API_KEY = "PUT_UR_APIKEY_HERE";
 ```
@@ -143,7 +143,7 @@ arduino-cli compile --upload \
   --build-property "build.cdc_on_boot=0" \
   --port /dev/cu.usbmodem1101 \
   --libraries "$HOME/Documents/Arduino/libraries" \
-  ClaudeBuddy.ino
+  ClaudeAnywhere.ino
 ```
 
 On **Windows**, port will be something like `COM3`. On **Linux**, `/dev/ttyUSB0` or `/dev/ttyACM0`.
@@ -155,7 +155,7 @@ On **Windows**, port will be something like `COM3`. On **Linux**, `/dev/ttyUSB0`
 ## First boot
 
 1. Plug in the AtomS3U — LED turns **orange**
-2. It creates a WiFi hotspot called **`Claude-Buddy-Setup`**
+2. It creates a WiFi hotspot called **`Claude-Anywhere-Setup`**
 3. Connect your phone or laptop to that network
 4. Open a browser and go to **`http://192.168.4.1`**
 5. Enter your home/office WiFi credentials

@@ -1,9 +1,9 @@
 /*
-  Claude Buddy v5.0 — AtomS3U
+  Claude Anywhere v5.0 — AtomS3U
   ─────────────────────────────────────────────────────────────────
   Plug into any computer:
     • Shows up as a USB drive with launcher scripts (Mac/Win/Linux)
-    • Web chat UI at http://claudebuddy.local
+    • Web chat UI at http://claudeanywhere.local
     • Companion app enables ▶ Run on code blocks
     • Chat history saved to host disk, restored on reconnect
     • Serial terminal fallback (works on Pi / headless Linux)
@@ -38,7 +38,7 @@ const char* CLAUDE_API_KEY = "PUT_UR_APIKEY_HERE";
 const char* CLAUDE_MODEL   = "claude-sonnet-4-6";
 const char* CLAUDE_URL     = "https://api.anthropic.com/v1/messages";
 const char* SYSTEM_PROMPT  =
-  "You are Claude Buddy, running on an M5Stack AtomS3U hardware device. "
+  "You are Claude Anywhere, running on an M5Stack AtomS3U hardware device. "
   "The user may have a companion app running locally that can execute code. "
   "When writing Python, Bash, or Node.js code, write complete working scripts — "
   "the user can click the Run button next to any code block to run it on their computer. "
@@ -58,11 +58,11 @@ volatile uint8_t ledR = 255, ledG = 80, ledB = 0;
 // ── Companion Python script (served at GET /run) ──────────────────────
 const char COMPANION_PY[] PROGMEM = R"py(
 #!/usr/bin/env python3
-"""Claude Buddy companion — runs on your computer for code execution and history sync."""
+"""Claude Anywhere companion — runs on your computer for code execution and history sync."""
 import http.server, subprocess, json, webbrowser, threading, sys, os, signal
 
 PORT         = 12345
-HISTORY_FILE = os.path.join(os.path.expanduser('~'), '.claudebuddy', 'history.json')
+HISTORY_FILE = os.path.join(os.path.expanduser('~'), '.claudeanywhere', 'history.json')
 
 def _load_history():
     try:
@@ -156,11 +156,11 @@ threading.Thread(target=httpd.serve_forever, daemon=True).start()
 
 hist     = _load_history()
 n_msgs   = len(hist.get("messages", []))
-print(f"Claude Buddy companion running on http://localhost:{PORT}")
+print(f"Claude Anywhere companion running on http://localhost:{PORT}")
 if n_msgs:
-    print(f"Loaded {n_msgs} messages from previous session (~/.claudebuddy/history.json)")
-print("Opening http://claudebuddy.local ...")
-webbrowser.open("http://claudebuddy.local")
+    print(f"Loaded {n_msgs} messages from previous session (~/.claudeanywhere/history.json)")
+print("Opening http://claudeanywhere.local ...")
+webbrowser.open("http://claudeanywhere.local")
 print("Press Ctrl+C to stop.\n")
 signal.signal(signal.SIGINT, lambda *_: (httpd.shutdown(), sys.exit(0)))
 threading.Event().wait()
@@ -172,7 +172,7 @@ const char INDEX_HTML[] PROGMEM = R"html(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Claude Buddy</title>
+<title>Claude Anywhere</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3;height:100dvh;display:flex;flex-direction:column}
@@ -211,14 +211,14 @@ pre code{background:none;padding:0;font-size:.83rem}
 <body>
 <header>
   <div class="dot"></div>
-  <h1><span>Claude Buddy</span> &nbsp;·&nbsp; claude-sonnet-4-6</h1>
+  <h1><span>Claude Anywhere</span> &nbsp;·&nbsp; claude-sonnet-4-6</h1>
   <div id="cstatus">⚡ companion offline</div>
 </header>
 <div id="chat">
-  <div class="bubble claude">Hi! I'm Claude Buddy. Ask me anything — I can write and <strong>run</strong> code on your computer, answer questions, help with projects, and more.<br><br>
+  <div class="bubble claude">Hi! I'm Claude Anywhere. Ask me anything — I can write and <strong>run</strong> code on your computer, answer questions, help with projects, and more.<br><br>
   To enable code execution, open a terminal and run:<br>
-  <code>curl -s http://claudebuddy.local/run | python3</code><br><br>
-  Or use the launcher scripts on the Claude Buddy USB drive.</div>
+  <code>curl -s http://claudeanywhere.local/run | python3</code><br><br>
+  Or use the launcher scripts on the Claude Anywhere USB drive.</div>
 </div>
 <form id="form">
   <textarea id="inp" placeholder="Type a message… (Enter to send, Shift+Enter for newline)" rows="1"></textarea>
@@ -301,7 +301,7 @@ function fmt(s){
 }
 
 async function runCode(btn){
-  if(!companion){alert('Companion not running.\nOpen a terminal and run:\ncurl -s http://claudebuddy.local/run | python3\nOr use the launcher on the Claude Buddy USB drive.');return;}
+  if(!companion){alert('Companion not running.\nOpen a terminal and run:\ncurl -s http://claudeanywhere.local/run | python3\nOr use the launcher on the Claude Anywhere USB drive.');return;}
   const code=btn.parentElement.querySelector('pre code').textContent;
   const lang=btn.dataset.lang;
   btn.disabled=true;btn.textContent='⏳';
@@ -537,17 +537,17 @@ void connectWiFi() {
   WiFiManager wm;
   wm.setConnectTimeout(20);
   wm.setConfigPortalTimeout(300);
-  wm.setTitle("Claude Buddy Setup");
+  wm.setTitle("Claude Anywhere Setup");
   wm.setDarkMode(true);
 
   wm.setAPCallback([](WiFiManager*) {
     Serial.println(F("[WiFi] No saved credentials."));
-    Serial.println(F("[WiFi]   Connect to:  Claude-Buddy-Setup"));
+    Serial.println(F("[WiFi]   Connect to:  Claude-Anywhere-Setup"));
     Serial.println(F("[WiFi]   Then open:   http://192.168.4.1"));
     setLED(255, 80, 0);
   });
 
-  if (!wm.autoConnect("Claude-Buddy-Setup")) {
+  if (!wm.autoConnect("Claude-Anywhere-Setup")) {
     Serial.println(F("[WiFi] Failed. Restarting..."));
     setLED(255, 0, 0); delay(3000); ESP.restart();
   }
@@ -560,31 +560,31 @@ void connectWiFi() {
 // ── Banner ────────────────────────────────────────────────────────────
 void printBanner(const String& ip) {
   Serial.println();
-  Serial.println(F("  ╔═══════════════════════════════════════╗"));
-  Serial.println(F("  ║       CLAUDE BUDDY  v5.0              ║"));
-  Serial.println(F("  ║    AtomS3U · claude-sonnet-4-6        ║"));
-  Serial.println(F("  ╠═══════════════════════════════════════╣"));
-  Serial.println(F("  ║  OPEN IN BROWSER (same WiFi):         ║"));
-  Serial.print  (F("  ║    http://claudebuddy.local           ║\n"));
+  Serial.println(F("  ╔════════════════════════════════════════════╗"));
+  Serial.println(F("  ║    CLAUDE ANYWHERE  v5.0                   ║"));
+  Serial.println(F("  ║    AtomS3U · claude-sonnet-4-6             ║"));
+  Serial.println(F("  ╠════════════════════════════════════════════╣"));
+  Serial.println(F("  ║  OPEN IN BROWSER (same WiFi):              ║"));
+  Serial.println(F("  ║    http://claudeanywhere.local             ║"));
   Serial.print  (F("  ║    http://"));
   Serial.print(ip);
-  for (int i = ip.length(); i < 28; i++) Serial.print(' ');
+  for (int i = ip.length(); i < 33; i++) Serial.print(' ');
   Serial.println('║');
-  Serial.println(F("  ╠═══════════════════════════════════════╣"));
-  Serial.println(F("  ║  COMPANION (enables ▶ Run + history): ║"));
-  Serial.println(F("  ║    Use launcher on Claude Buddy drive  ║"));
-  Serial.println(F("  ║    or: curl http://claudebuddy.local   ║"));
-  Serial.println(F("  ║           /run | python3              ║"));
-  Serial.println(F("  ╠═══════════════════════════════════════╣"));
-  Serial.println(F("  ║  RASPBERRY PI / HEADLESS:             ║"));
-  Serial.println(F("  ║    screen /dev/ttyUSB0 115200         ║"));
-  Serial.println(F("  ║    or open http://claudebuddy.local   ║"));
-  Serial.println(F("  ╠═══════════════════════════════════════╣"));
-  Serial.println(F("  ║  LED   orange=connecting              ║"));
-  Serial.println(F("  ║        blue  =ready  rainbow=thinking ║"));
-  Serial.println(F("  ╠═══════════════════════════════════════╣"));
-  Serial.println(F("  ║  BUTTON tap=clear  hold 3s=reset WiFi ║"));
-  Serial.println(F("  ╚═══════════════════════════════════════╝"));
+  Serial.println(F("  ╠════════════════════════════════════════════╣"));
+  Serial.println(F("  ║  COMPANION (Run button + history):         ║"));
+  Serial.println(F("  ║    Use launcher on USB drive, or:          ║"));
+  Serial.println(F("  ║    curl http://claudeanywhere.local/run    ║"));
+  Serial.println(F("  ║         | python3                          ║"));
+  Serial.println(F("  ╠════════════════════════════════════════════╣"));
+  Serial.println(F("  ║  RASPBERRY PI / HEADLESS LINUX:            ║"));
+  Serial.println(F("  ║    screen /dev/ttyUSB0 115200              ║"));
+  Serial.println(F("  ║    or open http://claudeanywhere.local     ║"));
+  Serial.println(F("  ╠════════════════════════════════════════════╣"));
+  Serial.println(F("  ║  LED   orange=connecting                   ║"));
+  Serial.println(F("  ║        blue=ready   rainbow=thinking       ║"));
+  Serial.println(F("  ╠════════════════════════════════════════════╣"));
+  Serial.println(F("  ║  BUTTON tap=clear  hold 3s=reset WiFi      ║"));
+  Serial.println(F("  ╚════════════════════════════════════════════╝"));
   Serial.println();
   Serial.println(F("  Or type here and press Enter."));
   Serial.println();
@@ -601,7 +601,7 @@ void setup() {
 
   // USB MSC (appears as flash drive with launchers)
   MSC.vendorID("Claude");
-  MSC.productID("Buddy");
+  MSC.productID("Anywhere");
   MSC.productRevision("1.0");
   MSC.onRead(mscRead);
   MSC.onStartStop(mscStartStop);
@@ -614,7 +614,7 @@ void setup() {
 
   connectWiFi();
 
-  MDNS.begin("claudebuddy");
+  MDNS.begin("claudeanywhere");
   server.on("/",        HTTP_GET,  handleRoot);
   server.on("/chat",    HTTP_POST, handleChat);
   server.on("/clear",   HTTP_POST, handleClear);
