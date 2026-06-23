@@ -165,6 +165,25 @@ WiFi credentials are saved to flash. On all future boots it connects automatical
 
 ---
 
+## Using it where api.anthropic.com is blocked (e.g. China)
+
+The WiFi setup portal (`http://192.168.4.1`) has a second field: **"Claude API endpoint"**. Leave it blank to talk to Anthropic directly. If `api.anthropic.com` is blocked on your network, point it at a relay instead — a small server outside the censored region that forwards requests to Anthropic.
+
+**Quickest option — Cloudflare Worker:**
+
+1. Deploy [`tools/relay-worker.js`](tools/relay-worker.js) at [dash.cloudflare.com](https://dash.cloudflare.com) → Workers & Pages → Create
+2. Note the URL it gives you, e.g. `https://your-worker.your-subdomain.workers.dev`
+3. In the WiFi setup portal, set the endpoint field to:
+   ```
+   https://your-worker.your-subdomain.workers.dev/v1/messages
+   ```
+
+Cloudflare Workers are inconsistently blocked by some firewalls (domain/SNI filtering comes and goes). If it stops working, a **self-hosted VPS relay** (a cheap box in Japan/Singapore/US running the same forwarding logic as a small Node or Python server) is more reliable but requires you to stand up and maintain it yourself.
+
+To change or clear the relay endpoint later: hold the button 3 seconds to reset WiFi, which reopens the setup portal with both fields editable.
+
+---
+
 ## LED guide
 
 | Color | Meaning |
